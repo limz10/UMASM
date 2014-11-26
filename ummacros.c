@@ -35,6 +35,28 @@ void neg(Umsections_T asm, Ummacros_Reg A, Ummacros_Reg B, int temporary)
         Umsections_emit_word(asm, um_op(ADD, A, A, temporary));
 }
 
+void sub(Umsections_T asm, Ummacros_Reg A, Ummacros_Reg B, 
+        Ummacros_Reg C, int temporary)
+{
+        neg(asm, A, B, temporary);
+        Umsections_emit_word(asm, um_op(ADD, C, C, A));
+}
+
+void and(Umsections_T asm, Ummacros_Reg A, Ummacros_Reg B, Ummacros_Reg C)
+{
+        Umsections_emit_word(asm, um_op(NAND, A, B, C));
+        com(asm, B, A); 
+}
+
+void or(Umsections_T asm, Ummacros_Reg A, Ummacros_Reg B, 
+        Ummacros_Reg C, int temporary)
+{
+        Umsections_emit_word(asm, um_op(NAND, A, B, B));
+        Umsections_emit_word(asm, um_op(NAND, temporary, C, C));
+        Umsections_emit_word(asm, um_op(NAND, B, A, temporary));
+}
+
+
 
 /* Emit a macro instruction into 'asm', possibly overwriting temporary
 	 register. Argument of -1 means no temporary is available.
@@ -61,26 +83,17 @@ void Ummacros_op(Umsections_T asm, Ummacros_Op operator, int temporary,
 			if (temporary == -1)
 				fprintf(stderr, "ERROR!\n");
 
-// r0 = r0 - r2
-        // r4 = -r2
-        // r0 = r0 + r4
-			Umsections_emit_word(asm, 
-			        umasm_op(NEG, A, B, C));
+                        sub(asm, A, B, C, temporary);
 		
 		case AND :
-			if (temporary == -1)
-				fprintf(stderr, "ERROR!\n");
-
-			Umsections_emit_word(asm, 
-				three_register(AND, A, B, C));
+                        and(asm, A, B, C);
+			
 		
 		case OR :
 			if (temporary == -1)
 				fprintf(stderr, "ERROR!\n");
 
-			Umsections_emit_word(asm, 
-				three_register(OR, A, B, C));
-
+			or(asm, A, B, C, temporary);
 		}
 }
 
