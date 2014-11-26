@@ -119,11 +119,11 @@ void Ummacros_load_literal(Umsections_T asm, int temporary, Ummacros_Reg A,
                                 uint32_t k)
 {
         if (!(k >> 25 & ~0)) //DOES FIT IN 25 BITS
-                loadval(asm, A, k);
+                loadv(asm, A, k);
         else if (!(~k >> 25 & ~0)) //K's COM DOES FIT IN 25 BITS
                 {
-                        loadval(asm, A, ~k);
-                        com()
+                        
+                        
                 }
                 
         else if (temporary == -1)
