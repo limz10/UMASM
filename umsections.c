@@ -38,6 +38,11 @@ void write_section(UArray_T sections, FILE* output)
                 fputc(*(int*)UArray_at(sections, i), output);
 }
 
+struct table_cl {
+        void apply;
+        void *cl;
+};
+
 static void table_apply(void *key, void ** val, void * cl)
 {
         struct table_cl *tcl = cl;
@@ -45,10 +50,6 @@ static void table_apply(void *key, void ** val, void * cl)
         tcl->apply(*(const char*)key, tcl->cl);
 }
 
-struct table_cl {
-        void apply;
-        void *cl;
-};
 
 
 /* -----------real stuff--------------*/
