@@ -35,7 +35,7 @@ bool section_exists(Umsections_T asm, const char* name)
 void write_section(UArray_T sections, FILE* output)
 {
         for (int i = 0; i < UArray_length(sections); i++)
-                fputc(UArray_at(sections, i), output);
+                fputc(*(int*)UArray_at(sections, i), output);
 }
 
 /* -----------real stuff--------------*/
