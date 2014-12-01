@@ -140,11 +140,3 @@ void Ummacros_load_literal(Umsections_T asm, int temporary, Ummacros_Reg A,
         }
 
 }
-
-static void add_label(Seq_T stream, int location_to_patch, int label_value)
-{
-        Um_instruction inst = get_inst(stream, location_to_patch);
-        unsigned k = Bitpack_getu(inst, 25, 0);
-        inst = Bitpack_newu(inst, 25, 0, label_value + k);
-        put_inst(stream, location_to_patch, inst);
-}
