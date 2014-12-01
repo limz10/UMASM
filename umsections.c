@@ -55,9 +55,14 @@ void Umsections_free(Umsections_T *asmp)
         FREE(asmp);
 }
 
-// int Umsections_error(Umsections_T asm, const char *msg);
-//    call the assembler's error function, using the error state
-//      passed in at creation time 
+// call the assembler's error function, using the error state
+//   passed in at creation time 
+int Umsections_error(Umsections_T asm, const char *msg)
+{
+        (void)asm;
+        (void)msg;
+}
+
 
 void Umsections_section(Umsections_T asm, const char *section)
 {
@@ -77,10 +82,12 @@ void Umsections_emit_word(Umsections_T asm, Umsections_word data)
         = data;
 }
 
-// void Umsections_map(T asm, void apply(const char *name, void *cl), void *cl)
-// {
-
-// }
+void Umsections_map(T asm, void apply(const char *name, void *cl), void *cl)
+{
+        (void)asm;
+        (void)apply;
+        (void)cl;
+}
 
 int Umsections_length(Umsections_T asm, const char *name)
 {
