@@ -62,8 +62,8 @@ Umsections_T Umsections_new(const char *section,
 {
         Umsections_T to_return = malloc(sizeof(struct Umsections_T));
         
-        to_return->error = NULL;
-        to_return->errstate = NULL;
+        to_return->error = error;
+        to_return->errstate = errstate;
 
         to_return->table = Table_new(5, NULL, NULL);
         Table_put(to_return->table, section, NULL);
