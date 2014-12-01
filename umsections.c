@@ -8,10 +8,10 @@
 
 struct Umsections_T 
 {
-        Table_T table;
-        // Seq_T section;
-        // char* name;
+        Table_T table;       
         char* current;
+        int (*error)(void*, const char*);
+        void* errstate;
 };
 
 
@@ -45,11 +45,11 @@ Umsections_T Umsections_new(const char *section,
             int (*error)(void *errstate, const char *message),
             void *errstate)
 {
-        (void)error;
-        (void)errstate;
-
         Umsections_T to_return = malloc(sizeof(struct Umsections_T));
         
+        to_return->error = NULL;
+        to_return->errstate = NULL;
+
         to_return->table = Table_new(5, NULL, NULL);
         Table_put(to_return->table, section, NULL);
         to_return->current = NULL;
@@ -66,9 +66,7 @@ void Umsections_free(Umsections_T *asmp)
 //   passed in at creation time 
 int Umsections_error(Umsections_T asm, const char *msg)
 {
-        (void)asm;
-        (void)msg;
-        return 0;
+        return asm->(*error)(asm->errstate, msg);
 }
 
 
@@ -93,7 +91,7 @@ void Umsections_emit_word(Umsections_T asm, Umsections_word data)
 void Umsections_map(Umsections_T asm, void apply(const char *name, void *cl),
                         void *cl)
 {
-        int length = (asm->table)->size;
+        int length = Table_length(asm->table);
         for (int i = 0; i < length; i++)
                 if ((asm->table)->bucket[i] != NULL)
                         apply((asm->table)->bucket[i], cl);
@@ -103,7 +101,7 @@ int Umsections_length(Umsections_T asm, const char *name)
 {
         int to_return = 0;
         if (!section_exists(asm, name))
-                fprintf(stderr, "ERROR!\n");
+                Umsections_error(asm, "ERROR!\n");
         else
                 to_return = UArray_length(Table_get(asm->table, name));
 
@@ -113,7 +111,7 @@ int Umsections_length(Umsections_T asm, const char *name)
 Umsections_word Umsections_getword(Umsections_T asm, const char *name, int i)
 {
         if (!section_exists(asm, name) || i >= Umsections_length(asm, name))
-                fprintf(stderr, "ERROR!\n");
+                Umsections_error(asm, "ERROR!\n");
         
         return *(Umsections_word*)UArray_at(Table_get(asm->table, name), i);
 }
@@ -121,7 +119,7 @@ Umsections_word Umsections_getword(Umsections_T asm, const char *name, int i)
 void Umsections_putword(Umsections_T asm, const char *name, int i, Umsections_word w)
 {
         if (!section_exists(asm, name) || i >= Umsections_length(asm, name))
-                fprintf(stderr, "ERROR!\n");
+                Umsections_error(asm, "ERROR!\n");
 
         *(Umsections_word*)UArray_at(Table_get(asm->table, name), i) = w;
 }
