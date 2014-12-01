@@ -129,6 +129,7 @@ void Ummacros_load_literal(Umsections_T asm, int temporary, Ummacros_Reg A,
                 
         else if (temporary == -1)
                         fprintf(stderr, "ERROR!\n");
+        
         else {
                 uint32_t upper, lower;
                 upper = Bitpack_getu(k, 7, 25);
