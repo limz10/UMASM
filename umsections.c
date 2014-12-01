@@ -61,6 +61,7 @@ int Umsections_error(Umsections_T asm, const char *msg)
 {
         (void)asm;
         (void)msg;
+        return 0;
 }
 
 
