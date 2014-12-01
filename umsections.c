@@ -38,6 +38,18 @@ void write_section(UArray_T sections, FILE* output)
                 fputc(*(int*)UArray_at(sections, i), output);
 }
 
+static void table_apply(void *key, void ** val, void * cl)
+{
+        struct table_cl *tcl = cl;
+        (void)val;
+        tcl->apply(*(const char*)key, tcl->cl);
+}
+
+struct table_cl {
+        void apply;
+        void *cl;
+};
+
 
 /* -----------real stuff--------------*/
 
@@ -91,10 +103,8 @@ void Umsections_emit_word(Umsections_T asm, Umsections_word data)
 void Umsections_map(Umsections_T asm, void apply(const char *name, void *cl),
                         void *cl)
 {
-        int length = Table_length(asm->table);
-        for (int i = 0; i < length; i++)
-                if ((asm->table)->bucket[i] != NULL)
-                        apply((asm->table)->bucket[i], cl);
+        struct table_cl mycl = { apply, cl };
+        Table_map(asm->table, table_apply, &mycl);
 }
 
 int Umsections_length(Umsections_T asm, const char *name)
