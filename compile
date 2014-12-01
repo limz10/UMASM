@@ -18,7 +18,6 @@ CIILIBS=`pkg-config --libs cii40`
 CFLAGS="-I. -I/comp/40/include $CIIFLAGS"
 LIBS="$CIILIBS -lumasm -llua5.1-lpeg -llua -lbitpack"
 LFLAGS="-L/comp/40/lib64"
-# MODULES=""
 
 # these flags max out warnings and debug info
 FLAGS="-g -O0 -Wall -Wextra -Werror -Wfatal-errors -std=c99 -pedantic -O2"
@@ -40,7 +39,7 @@ done
 # using one case statement per executable binary
 
 case $link in
-  all|um) gcc $FLAGS -o umasm umsections.o \
+  all|um) gcc $FLAGS -o umasm umasm.o umsections.o \
                   $LIBS $LFLAGS $CIILIBS
               linked=yes ;;
 esac
