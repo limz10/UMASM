@@ -92,7 +92,7 @@ void Umsections_emit_word(Umsections_T asm, Umsections_word data)
 void Umsections_map(Umsections_T asm, void apply(const char *name, void *cl),
                         void *cl)
 {
-        Table_map(asm->table, *apply, cl);
+        Table_map(asm->table, apply(name, NULL, cl), cl);
 }
 
 int Umsections_length(Umsections_T asm, const char *name)
