@@ -18,7 +18,7 @@ struct Umsections_T
 /*------------helpers---------*/
 unsigned hash(unsigned char *str)
 {
-        unsigned long hash = 5381;
+        unsigned long hash = 1039;
         int c;
 
         while ((c = *str++))
@@ -30,6 +30,12 @@ unsigned hash(unsigned char *str)
 bool section_exists(Umsections_T asm, const char* name)
 {
         return (Table_get(asm->table, name) != NULL);
+}
+
+void write_section(UArray_T sections, FILE* output)
+{
+        for (unsigned i = 0; i < UArray_length(sections); i++)
+                fputc(UArray_at(sections, i), output);
 }
 
 /* -----------real stuff--------------*/
@@ -86,9 +92,7 @@ void Umsections_emit_word(Umsections_T asm, Umsections_word data)
 void Umsections_map(Umsections_T asm, void apply(const char *name, void *cl),
                         void *cl)
 {
-        (void)asm;
-        (void)apply;
-        (void)cl;
+        Table_map(asm, apply, cl);
 }
 
 int Umsections_length(Umsections_T asm, const char *name)
@@ -120,6 +124,5 @@ void Umsections_putword(Umsections_T asm, const char *name, int i, Umsections_wo
 
 void Umsections_write(Umsections_T asm, FILE *output)
 {
-        (void)asm;
-        (void)output;
+        Table_map(asm, write_section, NULL);
 }
