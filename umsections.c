@@ -81,7 +81,7 @@ void Umsections_free(Umsections_T *asmp)
 //   passed in at creation time 
 int Umsections_error(Umsections_T asm, const char *msg)
 {
-        return *(asm->error)(asm->errstate, msg);
+        return asm->error(asm->errstate, msg);
 }
 
 
