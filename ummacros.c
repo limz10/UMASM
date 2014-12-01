@@ -122,15 +122,22 @@ void Ummacros_load_literal(Umsections_T asm, int temporary, Ummacros_Reg A,
                 loadv(asm, A, k);
         else if (!(~k >> 25 & ~0)) //K's COM DOES FIT IN 25 BITS
                 {
-                        
+                        loadval(A, ~k);
+                        com(asm, A, A);
                         
                 }
                 
         else if (temporary == -1)
                         fprintf(stderr, "ERROR!\n");
         else {
-
-                }
+                uint32_t upper, lower;
+                upper = Bitpack_getu(k, 7, 25);
+                lower = Bitpack_getu(k, 25, 0);
+                upper << 25;
+                loadval(A, upper);
+                loadval(temporary, lower);
+                Umsections_emit_word(asm, um_op(ADD, B, A, temporary));
+        }
 
 }
 
