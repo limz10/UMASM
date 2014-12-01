@@ -93,9 +93,10 @@ void Umsections_emit_word(Umsections_T asm, Umsections_word data)
 void Umsections_map(Umsections_T asm, void apply(const char *name, void *cl),
                         void *cl)
 {
-        for (int i = 0; i < asm->table->size; i++)
-                if (asm->table->bucket[i] != NULL)
-                        apply(asm->table->bucket[i], cl);
+        int length = (asm->table)->size;
+        for (int i = 0; i < length; i++)
+                if ((asm->table)->bucket[i] != NULL)
+                        apply((asm->table)->bucket[i], cl);
 }
 
 int Umsections_length(Umsections_T asm, const char *name)
