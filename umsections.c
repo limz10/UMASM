@@ -16,26 +16,9 @@ struct Umsections_T
 
 
 /*------------helpers---------*/
-unsigned hash(unsigned char *str)
-{
-        unsigned long hash = 1039;
-        int c;
-
-        while ((c = *str++))
-                hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
-        return hash;    
-}
-
 bool section_exists(Umsections_T asm, const char* name)
 {
         return (Table_get(asm->table, name) != NULL);
-}
-
-void write_section(UArray_T sections, FILE* output)
-{
-        for (int i = 0; i < UArray_length(sections); i++)
-                fputc(*(int*)UArray_at(sections, i), output);
 }
 
 typedef void Apply(const char *name, void *cl);
@@ -52,7 +35,24 @@ void table_apply(const void* key, void ** val, void * cl)
         tcl->apply((const char*)key, tcl->cl);
 }
 
+struct output_cl {
+        char* name;
+        FILE* output;
+};
 
+void write_section(const void* key, void ** val, void * cl)
+{
+        (void)key;
+        (void)val;
+
+        const char* name = cl->name;
+        FILE* output = cl->output;
+
+        UArray_T sections = Table_get(asm->table, name);
+
+        for (int i = 0; i < UArray_length(sections); i++)
+                fputc(*(int*)UArray_at(sections, i), output);
+}
 
 /* -----------real stuff--------------*/
 
@@ -139,5 +139,6 @@ void Umsections_putword(Umsections_T asm, const char *name, int i, Umsections_wo
 
 void Umsections_write(Umsections_T asm, FILE *output)
 {
-        Table_map(asm->table, write_section, NULL);
+        struct output_cl mycl = { }
+        Table_map(asm->table, write_section, );
 }
