@@ -131,10 +131,9 @@ void Ummacros_load_literal(Umsections_T asm, int temporary, Ummacros_Reg A,
                         fprintf(stderr, "ERROR!\n");
         
         else {
-                uint32_t upper, lower;
-                upper = Bitpack_getu(k, 7, 25);
-                lower = Bitpack_getu(k, 25, 0);
-                upper << 25;
+                uint32_t upper = Bitpack_getu(k, 7, 25);
+                uint32_t lower = Bitpack_getu(k, 25, 0);
+                upper = upper << 25;
                 loadval(A, upper);
                 loadval(temporary, lower);
                 Umsections_emit_word(asm, um_op(ADD, B, A, temporary));
