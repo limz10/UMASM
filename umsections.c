@@ -38,6 +38,13 @@ void write_section(UArray_T sections, FILE* output)
                 fputc(*(int*)UArray_at(sections, i), output);
 }
 
+void table_apply(char* name, void **sections, void *cl)
+{
+        (void)names;
+        (void)sections;
+        *cl;
+}
+
 /* -----------real stuff--------------*/
 
 Umsections_T Umsections_new(const char *section, 
@@ -92,8 +99,7 @@ void Umsections_emit_word(Umsections_T asm, Umsections_word data)
 void Umsections_map(Umsections_T asm, void apply(const char *name, void *cl),
                         void *cl)
 {
-        void app(const char *name, UArray_T val, void *cl));
-        Table_map(asm->table, app, cl);
+        Table_map(asm->table, table_apply, cl);
 }
 
 int Umsections_length(Umsections_T asm, const char *name)
