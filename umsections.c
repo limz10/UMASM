@@ -82,7 +82,8 @@ void Umsections_emit_word(Umsections_T asm, Umsections_word data)
         = data;
 }
 
-void Umsections_map(T asm, void apply(const char *name, void *cl), void *cl)
+void Umsections_map(Umsections_T asm, void apply(const char *name, void *cl),
+                        void *cl)
 {
         (void)asm;
         (void)apply;
