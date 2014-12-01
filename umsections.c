@@ -45,7 +45,7 @@ struct table_cl {
         void *cl;
 };
 
-static void table_apply(const char* key, void ** val, void * cl)
+void table_apply(const char* key, void ** val, void * cl)
 {
         struct table_cl *tcl = cl;
         (void)val;
