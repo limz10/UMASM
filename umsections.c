@@ -39,7 +39,7 @@ void write_section(UArray_T sections, FILE* output)
 }
 
 struct table_cl {
-        void apply;
+        void *apply;
         void *cl;
 };
 
