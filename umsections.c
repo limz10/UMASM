@@ -38,10 +38,10 @@ void write_section(UArray_T sections, FILE* output)
                 fputc(*(int*)UArray_at(sections, i), output);
 }
 
-typedef void apply(const char *name, void *cl);
+typedef void Apply(const char *name, void *cl);
 
 struct table_cl {
-        void *apply;
+        Apply *apply;
         void *cl;
 };
 
