@@ -45,11 +45,11 @@ struct table_cl {
         void *cl;
 };
 
-void table_apply(const char* key, void ** val, void * cl)
+void table_apply(const void* key, void ** val, void * cl)
 {
         struct table_cl *tcl = cl;
         (void)val;
-        tcl->apply(key, tcl->cl);
+        tcl->apply(*(char*)key, tcl->cl);
 }
 
 
