@@ -136,7 +136,7 @@ void Ummacros_load_literal(Umsections_T asm, int temporary, Ummacros_Reg A,
                 upper = upper << 25;
                 loadval(A, upper);
                 loadval(temporary, lower);
-                Umsections_emit_word(asm, um_op(ADD, B, A, temporary));
+                Umsections_emit_word(asm, um_op(ADD, A, A, temporary));
         }
 
 }
