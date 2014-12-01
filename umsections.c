@@ -49,7 +49,7 @@ void table_apply(const void* key, void ** val, void * cl)
 {
         struct table_cl *tcl = cl;
         (void)val;
-        tcl->apply(*(char*)key, tcl->cl);
+        tcl->apply(*(const char*)key, tcl->cl);
 }
 
 
