@@ -1,15 +1,19 @@
 #include "umsections.h"
 #include "table.h"
-#include "uarray.h"
+#include "seq.h"
 #include "mem.h"
+#include "string.h"
+#include "assert.h"
+#include "atom.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 struct Umsections_T 
 {
         Table_T table;       
-        char* current;
+        const char* current;
         int (*error)(void*, const char*);
         void* errstate;
 };
@@ -35,23 +39,28 @@ void table_apply(const void* key, void ** val, void * cl)
         tcl->apply((const char*)key, tcl->cl);
 }
 
-struct output_cl {
-        char* name;
-        FILE* output;
-};
+void table_free(const void *key, void **value, void *cl)
+{
+        (void)key; 
+        (void)cl;
+
+        Seq_T seq = *(Seq_T*)value;
+        for (int i = 0; i < Seq_length(seq); i++)
+                free(Seq_get(seq, i));
+
+        Seq_free(&seq);
+}
+
 
 void write_section(const void* key, void ** val, void * cl)
 {
         (void)key;
-        (void)val;
 
-        const char* name = cl->name;
-        FILE* output = cl->output;
+        Seq_T sections = *(Seq_T*)val;
+        FILE* output = cl;
 
-        UArray_T sections = Table_get(asm->table, name);
-
-        for (int i = 0; i < UArray_length(sections); i++)
-                fputc(*(int*)UArray_at(sections, i), output);
+        for (int i = 0; i < Seq_length(sections); i++)
+                fputc(*(int*)Seq_get(sections, i), output);
 }
 
 /* -----------real stuff--------------*/
@@ -66,7 +75,11 @@ Umsections_T Umsections_new(const char *section,
         to_return->errstate = errstate;
 
         to_return->table = Table_new(5, NULL, NULL);
-        Table_put(to_return->table, section, NULL);
+
+        const char* section_atom = Atom_string(section);
+
+        Seq_T value = Seq_new(10);
+        Table_put(to_return->table, section_atom, value);
         to_return->current = NULL;
 
         return to_return;
@@ -74,7 +87,9 @@ Umsections_T Umsections_new(const char *section,
 
 void Umsections_free(Umsections_T *asmp)
 {
-        FREE(asmp);
+        Table_map((*asmp)->table, table_free, NULL);
+        Table_free(&(*asmp)->table);
+        free(*asmp);
 }
 
 // call the assembler's error function, using the error state
@@ -87,20 +102,21 @@ int Umsections_error(Umsections_T asm, const char *msg)
 
 void Umsections_section(Umsections_T asm, const char *section)
 {
-        if (!Table_get(asm->table, section))
-                *asm->current = *section;
-        else {
-                Table_put(asm->table, section, NULL);
-                *asm->current = *section;
+        if (Table_get(asm->table, section) == NULL) {
+                const char* section_atom = Atom_string(section);
+                Table_put(asm->table, section_atom, NULL);
         }
-                
+
+        const char* current = Atom_string(section);
+        asm->current = current;        
 }
 
 void Umsections_emit_word(Umsections_T asm, Umsections_word data)
 {
-        UArray_T sections = Table_get(asm->table, asm->current);
-        *(Umsections_word*)UArray_at(sections, UArray_length(sections) + 1) 
-        = data;
+        Seq_T sections = Table_get(asm->table, asm->current);
+        Umsections_word *word = malloc(sizeof(Umsections_word));
+        *word = data;
+        Seq_addhi(sections, word);
 }
 
 void Umsections_map(Umsections_T asm, void apply(const char *name, void *cl),
@@ -115,9 +131,10 @@ int Umsections_length(Umsections_T asm, const char *name)
         int to_return = 0;
         if (!section_exists(asm, name))
                 Umsections_error(asm, "ERROR!\n");
-        else
-                to_return = UArray_length(Table_get(asm->table, name));
-
+        else {
+                const char* section_atom = Atom_string(name);
+                to_return = Seq_length(Table_get(asm->table, section_atom));
+        }
         return to_return;
 }
 
@@ -126,19 +143,23 @@ Umsections_word Umsections_getword(Umsections_T asm, const char *name, int i)
         if (!section_exists(asm, name) || i >= Umsections_length(asm, name))
                 Umsections_error(asm, "ERROR!\n");
         
-        return *(Umsections_word*)UArray_at(Table_get(asm->table, name), i);
+        const char* section_atom = Atom_string(name);
+        return *(Umsections_word*)Seq_get(
+                Table_get(asm->table, section_atom), i);
 }
 
-void Umsections_putword(Umsections_T asm, const char *name, int i, Umsections_word w)
+void Umsections_putword(Umsections_T asm, const char *name, int i,
+ Umsections_word w)
 {
         if (!section_exists(asm, name) || i >= Umsections_length(asm, name))
                 Umsections_error(asm, "ERROR!\n");
 
-        *(Umsections_word*)UArray_at(Table_get(asm->table, name), i) = w;
+        const char* section_atom = Atom_string(name);
+        *(Umsections_word*)Seq_get(
+                Table_get(asm->table, section_atom), i) = w;
 }
 
 void Umsections_write(Umsections_T asm, FILE *output)
 {
-        struct output_cl mycl = { }
-        Table_map(asm->table, write_section, );
+        Table_map(asm->table, write_section, output);
 }
