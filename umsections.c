@@ -60,7 +60,7 @@ void write_section(const void* key, void ** val, void * cl)
         FILE* output = cl;
 
         for (int i = 0; i < Seq_length(sections); i++)
-                fputc(*(int*)Seq_get(sections, i), output);
+                fputc(*(Umsections_word*)Seq_get(sections, i), output);
 }
 
 /* -----------real stuff--------------*/
@@ -149,7 +149,7 @@ Umsections_word Umsections_getword(Umsections_T asm, const char *name, int i)
 }
 
 void Umsections_putword(Umsections_T asm, const char *name, int i,
- Umsections_word w)
+                        Umsections_word w)
 {
         if (!section_exists(asm, name) || i >= Umsections_length(asm, name))
                 Umsections_error(asm, "ERROR!\n");

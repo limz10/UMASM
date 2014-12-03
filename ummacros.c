@@ -90,13 +90,13 @@ void Ummacros_op(Umsections_T asm, Ummacros_Op operator, int temporary,
 		
                 case NEG :
                         if (temporary == -1)
-                                fprintf(stderr, "ERROR!\n");
+                                Umsections_error(asm, "No Temp Reg Available!\n");
                         
                         neg(asm, A, B, temporary);
 		
                 case SUB :
 			if (temporary == -1)
-				fprintf(stderr, "ERROR!\n");
+                                Umsections_error(asm, "No Temp Reg Available!\n");
 
                         sub(asm, A, B, C, temporary);
 		
@@ -105,7 +105,7 @@ void Ummacros_op(Umsections_T asm, Ummacros_Op operator, int temporary,
 		
 		case OR :
 			if (temporary == -1)
-				fprintf(stderr, "ERROR!\n");
+                                Umsections_error(asm, "No Temp Reg Available!\n");
 
 			or(asm, A, B, C, temporary);
 		}
@@ -123,12 +123,11 @@ void Ummacros_load_literal(Umsections_T asm, int temporary, Ummacros_Reg A,
         else if (!(~k >> 25 & ~0)) //K's COM DOES FIT IN 25 BITS
                 {
                         loadval(A, ~k);
-                        com(asm, A, A);
-                        
+                        com(asm, A, A); 
                 }
                 
         else if (temporary == -1)
-                        fprintf(stderr, "ERROR!\n");
+                        Umsections_error(asm, "No Temp Reg Available!\n");
         
         else {
                 uint32_t upper = Bitpack_getu(k, 7, 25);
@@ -138,5 +137,4 @@ void Ummacros_load_literal(Umsections_T asm, int temporary, Ummacros_Reg A,
                 loadval(temporary, lower);
                 Umsections_emit_word(asm, um_op(ADD, A, A, temporary));
         }
-
 }
