@@ -1,0 +1,72 @@
+r4 := 4
+r5 := 3
+r6 := r5 nand r5
+r3 := r4 + r6
+r6 := 1
+r3 := r3 + r6
+r4 := 32768
+r3 := r3 / r4
+r4 := 65536
+r3 := r3 / r4
+r4 := 43
+r5 := 14
+if (r3 != 0) r4 := r5
+goto r4 in program m[r0]
+r3 := 102
+output r3
+r3 := 97
+output r3
+r3 := 105
+output r3
+r3 := 108
+output r3
+r3 := 101
+output r3
+r3 := 100
+output r3
+r3 := 32
+output r3
+r3 := 51
+output r3
+r3 := 32
+output r3
+r3 := 60
+output r3
+r3 := 115
+output r3
+r3 := 32
+output r3
+r3 := 52
+output r3
+r3 := 10
+output r3
+halt
+r3 := 112
+output r3
+r3 := 97
+output r3
+r3 := 115
+output r3
+r3 := 115
+output r3
+r3 := 101
+output r3
+r3 := 100
+output r3
+r3 := 32
+output r3
+r3 := 51
+output r3
+r3 := 60
+output r3
+r3 := 61
+output r3
+r3 := 115
+output r3
+r3 := 32
+output r3
+r3 := 52
+output r3
+r3 := 10
+output r3
+halt
