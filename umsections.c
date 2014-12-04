@@ -5,6 +5,7 @@
 #include "string.h"
 #include "assert.h"
 #include "atom.h"
+#include "bitpack.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -15,7 +16,7 @@ struct Umsections_T
         Table_T table;       
         const char* current;
         int (*error)(void*, const char*);
-        void* errstate;
+	void* errstate;
 };
 
 
@@ -60,7 +61,10 @@ void write_section(const void* key, void ** val, void * cl)
         FILE* output = cl;
 
         for (int i = 0; i < Seq_length(sections); i++) {
-                fprintf(output, "%x",*(uint32_t*)Seq_get(sections, i));
+                uint32_t word = *(uint32_t*)Seq_get(sections, i);
+		for (int j = 4; j > 0; j--) {
+			fputc(Bitpack_getu(word, 8, (j - 1) * 8), output); 
+		}
         }
 }
 
