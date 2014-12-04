@@ -118,8 +118,10 @@ void Ummacros_op(Umsections_T asm, Ummacros_Op operator, int temporary,
 void Ummacros_load_literal(Umsections_T asm, int temporary, Ummacros_Reg A, 
                                 uint32_t k)
 {
-        if (!(k >> 25 & ~0)) //DOES FIT IN 25 BITS
+        if (!(k >> 25 & ~0)) //DOES FIT IN 25 BITS 
+        {
                 loadv(asm, A, k);
+        }
         else if (!(~k >> 25 & ~0)) //K's COM DOES FIT IN 25 BITS
                 {
                         loadval(A, ~k);
@@ -130,6 +132,7 @@ void Ummacros_load_literal(Umsections_T asm, int temporary, Ummacros_Reg A,
                         Umsections_error(asm, "No Temp Reg Available!\n");
         
         else {
+
                 uint32_t upper = Bitpack_getu(k, 7, 25);
                 uint32_t lower = Bitpack_getu(k, 25, 0);
                 upper = upper << 25;

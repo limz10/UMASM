@@ -59,8 +59,9 @@ void write_section(const void* key, void ** val, void * cl)
         Seq_T sections = *(Seq_T*)val;
         FILE* output = cl;
 
-        for (int i = 0; i < Seq_length(sections); i++)
-                fputc(*(Umsections_word*)Seq_get(sections, i), output);
+        for (int i = 0; i < Seq_length(sections); i++) {
+                fprintf(output, "%x",*(uint32_t*)Seq_get(sections, i));
+        }
 }
 
 /* -----------real stuff--------------*/
@@ -161,5 +162,7 @@ void Umsections_putword(Umsections_T asm, const char *name, int i,
 
 void Umsections_write(Umsections_T asm, FILE *output)
 {
+        
         Table_map(asm->table, write_section, output);
+      
 }
