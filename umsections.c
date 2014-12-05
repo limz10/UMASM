@@ -6,6 +6,7 @@
 #include "assert.h"
 #include "atom.h"
 #include "bitpack.h"
+#include "fmt.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -134,8 +135,11 @@ void Umsections_map(Umsections_T asm, void apply(const char *name, void *cl),
 int Umsections_length(Umsections_T asm, const char *name)
 {
         int to_return = 0;
-        if (!section_exists(asm, name))
-                Umsections_error(asm, "ERROR!\n");
+        if (!section_exists(asm, name)) {
+                const char* msg = Fmt_string("Section %s does NOT exist!\n",
+                        name);
+                Umsections_error(asm, msg);
+        }
         else {
                 const char* section_atom = Atom_string(name);
                 to_return = Seq_length(Table_get(asm->table, section_atom));
@@ -145,9 +149,15 @@ int Umsections_length(Umsections_T asm, const char *name)
 
 Umsections_word Umsections_getword(Umsections_T asm, const char *name, int i)
 {
-        if (!section_exists(asm, name) || i >= Umsections_length(asm, name))
-                Umsections_error(asm, "ERROR!\n");
-        
+        if (!section_exists(asm, name)) {
+                const char* msg = Fmt_string("Section %s does NOT exist!\n",
+                        name);
+                Umsections_error(asm, msg);
+        }
+        if (i >= Umsections_length(asm, name)) {
+                const char* msg = Fmt_string("OUT OF BOUNDS!");
+                Umsections_error(asm, msg);
+        }
         const char* section_atom = Atom_string(name);
         return *(Umsections_word*)Seq_get(
                 Table_get(asm->table, section_atom), i);
@@ -156,8 +166,15 @@ Umsections_word Umsections_getword(Umsections_T asm, const char *name, int i)
 void Umsections_putword(Umsections_T asm, const char *name, int i,
                         Umsections_word w)
 {
-        if (!section_exists(asm, name) || i >= Umsections_length(asm, name))
-                Umsections_error(asm, "ERROR!\n");
+        if (!section_exists(asm, name)) {
+                const char* msg = Fmt_string("Section %s does NOT exist!\n",
+                        name);
+                Umsections_error(asm, msg);
+        }
+        if (i >= Umsections_length(asm, name)) {
+                const char* msg = Fmt_string("OUT OF BOUNDS!");
+                Umsections_error(asm, msg);
+        }
 
         const char* section_atom = Atom_string(name);
         *(Umsections_word*)Seq_get(
